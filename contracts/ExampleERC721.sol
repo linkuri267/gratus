@@ -3,9 +3,9 @@ pragma solidity ^0.4.18;
 import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 
 /**
- * The exampleERC721 contract does this and that...
+ * The ExampleERC721 contract does this and that...
  */
-contract exampleERC721 is ERC721Token{
+contract ExampleERC721 is ERC721Token{
 	address private creator;
 	uint256 constant private price = 50 ether;
 	string constant private creatorName = "Billy Lau";
@@ -15,7 +15,7 @@ contract exampleERC721 is ERC721Token{
 	event Donated(address donor);
 	
 	//Constructor
-	function exampleERC721 () {
+	function ExampleERC721 () {
 		creator = msg.sender;
 	}	
 
