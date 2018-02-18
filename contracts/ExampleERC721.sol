@@ -8,9 +8,9 @@ import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
 contract ExampleERC721 is ERC721Token{
 	address private creator; //require this field in all uploaded contracts
 	uint256 constant private price = 50 ether;
-	bytes32 constant private creatorName = "Billy Lau";
-	bytes32 constant private creatorBio = ""; //IPFS address
-	bytes32 constant private creatorDisplayImage = ""; //IPFS address
+	string constant private creatorName = "Billy Lau";
+	string constant private creatorBio = ""; //IPFS address
+	string constant private creatorDisplayImage = ""; //IPFS address
 
 	bool private donateLimitReached = false;
 
@@ -26,17 +26,27 @@ contract ExampleERC721 is ERC721Token{
 		return(creator);
 	}
 
-	function getCreatorName () public returns(bytes32) {
+	function getCreatorName () public returns(string) {
 		return(creatorName);
 	}
 
-	function getCreatorBio () public returns(bytes32) {
+	function getCreatorBio () public returns(string) {
 		return(creatorBio);
 	}
 	
-	function getCreatorDisplayImage () public returns(bytes32) {
+	function getCreatorDisplayImage () public returns(string) {
 		return(creatorDisplayImage);
 	}
+
+	// function testFlag () returns(string) {
+	// 	if(donateLimitReached){
+	// 		return("yes");
+	// 	}
+	// 	else{
+	// 		return("no");
+	// 	}
+	// }
+	
 	
 	//Mint
 	function mint () public payable{
