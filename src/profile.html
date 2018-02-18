@@ -76,37 +76,115 @@
 
     <div class="container">    
       <div class="row">
-        <div class="panel panel-default">
+        <div class="panel panel-primary panel-default">
           <div class="panel-heading">  <h4 >User Profile</h4></div>
           <div class="panel-body">
             <div class="col-md-4 col-xs-12 col-sm-6 col-lg-4">
              <img alt="User Pic" src="img/testimonials-1.jpg" id="profile-image1" class="img-circle img-responsive"> 
-
-
            </div>
            <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8" >
-            <div class="container" >
-              <h2>John Doe</h2>
-              <p>an   <b> Employee</b></p>
-
-
+            <div class="container">
+              <h2 id='#name'>Katie Westwood</h2>
+              <p id='bio'>Hi there! I'm an undergraduate at the University of California at Berkeley studying computer science and international business. I have a passion for bringing people together across diverse cultures to pursue the latest trends in technology, by spreading ideas, love, and knowledge. In my free time, I teach dance at Finnese Dance Studio.</p>
             </div>
             <hr>
             <ul class="container details" >
-              <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span>i.rudberg</p></li>
-              <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>somerandom@email.com</p></li>
+              <li><h5>Seeking: 2 ETH </h5></li>
+<!--               <li><p><span class="glyphicon glyphicon-user one" style="width:50px;"></span>i.rudberg</p></li>
+              <li><p><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>somerandom@email.com</p></li> -->
             </ul>
             <hr>
-            <div class="col-sm-5 col-xs-6 tital " >Date Of Joining: 15 Jun 2016</div>
+              <button class="btn btn-success">Donate</button>
           </div>
         </div>
       </div>
     </div>
 
-    
-    
+    <div class="container">    
+      <div class="row">
+        <div class="panel panel-info panel-default">
+          <div class="panel-heading">  <h4 >Smart Contract Source Code</h4></div>
+          <div class="panel-body">
+           <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8" >
+            <div class="container">
+              <h2>John Doe</h2>
+              <pre><code>pragma solidity ^0.4.18;
 
-    
+import "zeppelin-solidity/contracts/token/ERC721/ERC721Token.sol";
+
+/**
+ * The ExampleERC721 contract does this and that...
+ */
+contract ExampleERC721 is ERC721Token{
+  address private creator; //require this field in all uploaded contracts
+  uint256 constant private price = 50 ether;
+  string constant private creatorName = "Billy Lau";
+  string constant private creatorBio = ""; //IPFS address
+  string constant private creatorDisplayImage = ""; //IPFS address
+
+  bool private donateLimitReached = false;
+
+  event Donated(address donor);
+  
+  //Constructor
+  function ExampleERC721 () {
+    creator = msg.sender;
+  } 
+
+  //Getters
+  function getCreatorAddress () public returns(address) {
+    return(creator);
+  }
+
+  function getCreatorName () public returns(string) {
+    return(creatorName);
+  }
+
+  function getCreatorBio () public returns(string) {
+    return(creatorBio);
+  }
+  
+  function getCreatorDisplayImage () public returns(string) {
+    return(creatorDisplayImage);
+  }
+
+  // function testFlag () returns(string) {
+  //  if(donateLimitReached){
+  //    return("yes");
+  //  }
+  //  else{
+  //    return("no");
+  //  }
+  // }
+  
+  
+  //Mint
+  function mint () public payable{
+    require(!donateLimitReached); //check if someone has already donated
+    require(msg.value >= price); //check if donation amount is greater or equal to requested amount
+    _mint(msg.sender,0); //create the 0th token and send it to the donor
+    creator.transfer(msg.value); //transfer the donation ETH amount to the creator
+    Donated(msg.sender); //fire an event signalling donation has been sucessful
+    donateLimitReached = true; //flag to prevent multiple donations to the same token
+  }
+  
+
+
+  function tokenMetadata (uint256 _tokenId) constant returns(string) {
+    return("testIpfsAddress");
+  }
+  
+
+}
+
+              </code></pre>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- Footer -->
     <footer class="footer bg-light">
@@ -155,11 +233,20 @@
       </div>
     </footer>
 
-    <!-- Bootstrap core JavaScript -->
+     <!-- Bootstrap core JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/web3.min.js"></script>
+    <!-- <script src="/js/web3.min.js"></script> -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+
+    <script src="profile_script.js"></script>
+
+    <script>
+      window.onload=function(){
+        displayNDynamicBoxes();
+      }
+    </script>
 
     <script>
 

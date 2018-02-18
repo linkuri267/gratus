@@ -1,9 +1,10 @@
 class Creator {
 
-    constructor(name, bio, img) {
+    constructor(name, bio, img, contractAddress) {
         this.name = name;
         this.bio = bio;
         this.img = img;
+        this.contractAddress = contractAddress;
     }
 }
 
@@ -42,10 +43,40 @@ function getNCreatorInfo(n){
         contractABI = JSON.parse(contractABI);
 
         var contractI = web3.eth.contract(contractABI).at(randomAddresses[i]);
-        creators[i] = new Creator(contractI.getCreatorName(), contractI.getCreatorBio(), contractI.getCreatorDisplayImage());
+        creators[i] = new Creator(contractI.getCreatorName(), contractI.getCreatorBio(), contractI.getCreatorDisplayImage(), randomAddresses[i]);
     }
 
     return creators;
+}
+
+function getCreatorInfo(contractAddress, field) {
+    var contractABI;
+
+    ipfs.files.cat(contract.getAbiHashFromContract(contractAddress), function (err, file) {
+        if (err) {
+            throw err
+        }
+        contractABI = file.toString(‘utf8’);
+    })
+
+    contractABI = JSON.parse(contractABI);
+
+    var contractI = web3.eth.contract(contractABI).at(contractAddress);
+
+    switch(field){
+        case "name":
+            return contractI.getCreatorName();
+            break;
+        case "bio":
+            return contractI.getCreatorBio();
+            break;
+        case "img":
+            return contractI.getCreatorDisplayImage();
+            break;
+        case "price":
+            return contractI.getPrice();
+            break;
+    }
 }
 
 
@@ -74,6 +105,11 @@ function getNCreatorInfo(n){
 //     return fields;
 // }
 
+function displayProfilePage(contractAddress) {
+    var $name = $("<h2 id='#name'></h2>").html(getCreatorInfo(contractAddress, "name"));
+    var $bio = $("<p id='bio'></p>").html(getCreatorInfo(contractAddress, "bio"));
+}
+
 function displayNDynamicBoxes(n){
     var creators : Creator[] = getNCreatorInfo(n);
     var nLength = creators.length;
@@ -81,7 +117,8 @@ function displayNDynamicBoxes(n){
     for (var i = 0; i < nLength; i++){
         var html = '<div class="col-lg-4"><div class="card"><img class="card-img-top" src=' + creators[i].img + '>' + 
             '<div class="card-block"><h4 class="card-title">' + creators[i].name + '</h4><p class="card-text">' +
-        creators[i].bio + '</p><a href="profile.html" class="btn btn-primary">Donate</a></div><br></div></div>'
+        creators[i].bio + '</p><a href="profile.html" class="btn btn-primary">Donate</a></div><br></div></div>' +
+        '<input id=“prodId” name="prodId" type=“hidden” value=' + creators[i].contractAddress + '>'
         var profile = $("#profile").append(html);
     }
 }
