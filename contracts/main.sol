@@ -9,6 +9,7 @@ contract main {
 		address walletAddr;
 		address[] contractAddr; //Addresses of contracts created by this creator
 		string[] src; //IPFS addresses for contract source codes
+		string[] abi;
 		bool hasContract;
 		uint256 contractCount; //Number of contracts created by this creator
 	}
@@ -26,6 +27,11 @@ contract main {
 	mapping (address => Creator) contractAddressToCreator;
 
 	mapping (address => bool) creatorAddressToIncludedFlag; //Flags for preventing duplicate random addresses 
+
+	mapping (address => string) contractAddressToAbi;
+	mapping (address => string) contractAddressToSrc;
+	
+	
 	
 	// mapping (address => address) private creatorToContract;
 	// mapping (address => string) private creatorToSrc;
@@ -60,7 +66,8 @@ contract main {
 
 	//Creators will use this function to submit their contracts. Will exit if the contract creator field is not the message sender
 	//Sender is the creator in this case
-	function submitContract (address contractAddress, string ipfsHash) {
+	//Input is user contract address he/she wishes to submit and the IPFS hash of the uploaded source code of that contract
+	function submitContract (address contractAddress, string ipfsHashSrc, string ipfsHashAbi) {
 		ExampleERC721 submission;
 		submission = ExampleERC721(contractAddress);
 		address creatorAddress = submission.getCreatorAddress();
@@ -69,17 +76,23 @@ contract main {
 		if(!(creatorAddressToCreator[creatorAddress].hasContract)){
 			(creatorAddressToCreator[creatorAddress]).walletAddr = creatorAddress;
 			(creatorAddressToCreator[creatorAddress]).contractAddr.push(contractAddress);
-			(creatorAddressToCreator[creatorAddress]).src.push(ipfsHash);
+			(creatorAddressToCreator[creatorAddress]).src.push(ipfsHashSrc);
+			(creatorAddressToCreator[creatorAddress]).abi.push(ipfsHashAbi);
 			(creatorAddressToCreator[creatorAddress]).hasContract = true;
 			(creatorAddressToCreator[creatorAddress]).contractCount ++;
 			totalCreators ++;
 			contractAddressToCreator[contractAddress] = creatorAddressToCreator[creatorAddress];
+			contractAddressToSrc[contractAddress] = ipfsHashSrc;
+			contractAddressToAbi[contractAddress] = ipfsHashAbi;
 		}
 		else{
 			(creatorAddressToCreator[creatorAddress]).contractAddr.push(contractAddress);
-			(creatorAddressToCreator[creatorAddress]).src.push(ipfsHash);
+			(creatorAddressToCreator[creatorAddress]).src.push(ipfsHashSrc);
+			(creatorAddressToCreator[creatorAddress]).abi.push(ipfsHashAbi);
 			(creatorAddressToCreator[creatorAddress]).contractCount ++;
 			contractAddressToCreator[contractAddress] = creatorAddressToCreator[creatorAddress];
+			contractAddressToSrc[contractAddress] = ipfsHashSrc;
+			contractAddressToAbi[contractAddress] = ipfsHashAbi;
 		}
 		totalContracts ++;
 
@@ -110,6 +123,7 @@ contract main {
 	// }
 
 	//Returns n number of random contract addresses in an array. It will not return two contracts from the same creator. Pass in n as an input. 
+	//WARNING: ONLY WORKS PROPERLY ONCE RIGHT NOW
 	function getRandomContractAddress(uint256 n) returns(address[]) {
 		uint256 neededCount;
 		uint256 generatedCount = 0;
@@ -146,17 +160,17 @@ contract main {
 		//TODO: SET ALL INCLUDE FLAGS TO FALSE
 	}
 
-	//Returns a string containing the IPFS hash of the  ABI data of a contract. Pass the contract address you want to query the ABI of.
+	//Returns a string containing the IPFS hash of the source code of a contract. Pass the contract address you want to query the source code of.
+	function getSourceHashFromContract (address contractAddr) returns(string) {
+		require(contractAddressToCreator[contractAddr].hasContract);
+		return(contractAddressToSrc[contractAddr]);
+	}
+
 	function getAbiHashFromContract (address contractAddr) returns(string) {
 		require(contractAddressToCreator[contractAddr].hasContract);
-		uint contractIndex = 0;
-		for(uint i = 0; i < contractAddressToCreator[contractAddr].contractCount; i++){
-			if(contractAddressToCreator[contractAddr].contractAddr[i] == contractAddr){
-				contractIndex = i;
-			}
-		}
-		return(contractAddressToCreator[contractAddr].src[contractIndex]);
+		return(contractAddressToAbi[contractAddr]);
 	}
+	
 
 
 	//Generate a random uint256 within the range [lowerBound,upperBound]
