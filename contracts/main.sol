@@ -54,10 +54,19 @@ contract main {
 		seedHash = block.blockhash(block.number-1);	
 	}
 
+	function getTotalCreators () returns(uint256) {
+		return(totalCreators);
+	}
+	
+	function hasContract (address creatorAddress) returns(bool) {
+		return(creatorAddressToCreator[creatorAddress].hasContract);
+	}
+	
+
 	//Returns an array of contract addresses submitted by the creator. Takes the creator address as input.
 	function getContractFromCreator (address creatorAddress) returns(address[]) {
 		address[] contractAddresses;
-		require((creatorAddressToCreator[creatorAddress]).hasContract);
+		//require((creatorAddressToCreator[creatorAddress]).hasContract);
 		for(uint i = 0; i < (creatorAddressToCreator[creatorAddress]).contractCount; i++){
 			contractAddresses.push((creatorAddressToCreator[creatorAddress]).contractAddr[i]);
 		}
@@ -68,10 +77,7 @@ contract main {
 	//Sender is the creator in this case
 	//Input is user contract address he/she wishes to submit and the IPFS hash of the uploaded source code of that contract
 	function submitContract (address contractAddress, string ipfsHashSrc, string ipfsHashAbi) {
-		ExampleERC721 submission;
-		submission = ExampleERC721(contractAddress);
-		address creatorAddress = submission.getCreatorAddress();
-		require(creatorAddress == msg.sender);
+		address creatorAddress = msg.sender;
 
 		if(!(creatorAddressToCreator[creatorAddress].hasContract)){
 			(creatorAddressToCreator[creatorAddress]).walletAddr = creatorAddress;
@@ -84,6 +90,7 @@ contract main {
 			contractAddressToCreator[contractAddress] = creatorAddressToCreator[creatorAddress];
 			contractAddressToSrc[contractAddress] = ipfsHashSrc;
 			contractAddressToAbi[contractAddress] = ipfsHashAbi;
+			creators.push(creatorAddressToCreator[creatorAddress]);
 		}
 		else{
 			(creatorAddressToCreator[creatorAddress]).contractAddr.push(contractAddress);
@@ -131,43 +138,47 @@ contract main {
 		address iterationAddress;
 		address[] randomAddresses;
 
-		if(totalCreators>=n){
-			neededCount = n;
-			while(generatedCount < neededCount){
-				random = rand(0,totalCreators-1);
-				Creator iterationCreator = creators[n];
-				random = rand(0,iterationCreator.contractCount);
-				if(creatorAddressToIncludedFlag[iterationCreator.walletAddr] == false){
-					if(iterationCreator.hasContract){
-						randomAddresses.push(iterationCreator.contractAddr[random]);
-						generatedCount++;
-						creatorAddressToIncludedFlag[iterationCreator.walletAddr] = true;
-					}
-				}
-			}
-		}
-		else{
-			neededCount = totalCreators;
+		Creator iterationCreator;
+
+
+		// if(totalCreators>=n){
+		// 	neededCount = n;
+		// 	while(generatedCount < neededCount){
+		// 		random = rand(0,totalCreators-1);
+		// 		Creator iterationCreator = creators[n];
+		// 		random = rand(0,iterationCreator.contractCount);
+		// 		if(creatorAddressToIncludedFlag[iterationCreator.walletAddr] == false){
+		// 			if(iterationCreator.hasContract){
+		// 				randomAddresses.push(iterationCreator.contractAddr[random]);
+		// 				generatedCount++;
+		// 				creatorAddressToIncludedFlag[iterationCreator.walletAddr] = true;
+		// 			}
+		// 		}
+		// 	}
+		// }
+		//else{
+			//neededCount = totalCreators;
+			neededCount = n; //temp
 			for(uint i = 0; i < neededCount; i++){
 				iterationCreator = creators[i];
 				if(iterationCreator.hasContract){
-					random = rand(0,iterationCreator.contractCount);
-					randomAddresses.push(iterationCreator.contractAddr[random]);
+					//random = rand(0,iterationCreator.contractCount);
+					randomAddresses.push(iterationCreator.contractAddr[0]);
 				}
 			}
-		}
+		//}
 		return(randomAddresses);
 		//TODO: SET ALL INCLUDE FLAGS TO FALSE
 	}
 
 	//Returns a string containing the IPFS hash of the source code of a contract. Pass the contract address you want to query the source code of.
 	function getSourceHashFromContract (address contractAddr) returns(string) {
-		require(contractAddressToCreator[contractAddr].hasContract);
+		//require(contractAddressToCreator[contractAddr].hasContract);
 		return(contractAddressToSrc[contractAddr]);
 	}
 
 	function getAbiHashFromContract (address contractAddr) returns(string) {
-		require(contractAddressToCreator[contractAddr].hasContract);
+		//require(contractAddressToCreator[contractAddr].hasContract);
 		return(contractAddressToAbi[contractAddr]);
 	}
 	
@@ -187,7 +198,7 @@ contract main {
  */
 contract ExampleERC721 {
 	function getCreatorAddress() returns(address);
-	function getCreatorName() returns(bytes32);
-	function getCreatorBio() returns(bytes32);
-	function getCreatorDisplayImage() returns(bytes32);
+	function getCreatorName() returns(string);
+	function getCreatorBio() returns(string);
+	function getCreatorDisplayImage() returns(string);
 }

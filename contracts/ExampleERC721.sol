@@ -38,6 +38,10 @@ contract ExampleERC721 is ERC721Token{
 		return(creatorDisplayImage);
 	}
 
+	function getPrice() public returns(uint256){
+		return(price);
+	}
+
 	// function testFlag () returns(string) {
 	// 	if(donateLimitReached){
 	// 		return("yes");

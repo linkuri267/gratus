@@ -5,3 +5,7 @@ _contract_name.deployed().then(instance => instance._method_name({from:'_sender_
 
 _contract_name.deployed().then(instance => instance._method_name.call()).then(result=>storeData=result)
 
+
+main.deployed().then(instance => instance.submitContract.call(0x666a115002db9b03c6c7c882e4948d8186d5a355,"asd","asd")).then(result=>storeData=result)
+
+main.deployed().then(instance => instance.submitContract.call(0x666a115002db9b03c6c7c882e4948d8186d5a355,"asd","asd")).then(result=>storeData=result)
